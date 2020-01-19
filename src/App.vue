@@ -1,17 +1,18 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <h1 class="ui center aligned header">Elenco Corsi</h1>
+    <Courses />
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import 'semantic-ui-css/semantic.css'
+import Courses from './components/Courses.vue'
 
 export default {
   name: 'app',
   components: {
-    HelloWorld
+    Courses
   }
 }
 </script>
