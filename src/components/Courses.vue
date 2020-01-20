@@ -107,7 +107,18 @@ export default {
             this.courses = [];
             this.loading = true;
 
-            fetch('http://localhost:8080/Corsi-VVF-web/api/courses')
+            let headers = new Headers();
+            if(this.$store.state.userToken!=null) {
+                headers.append("Authorization", "Bearer "+this.$store.state.userToken);
+            }
+
+            let initParams = { 
+                headers: headers,
+                mode: 'cors',
+                cache: 'default'
+            };
+
+            fetch('http://localhost:8080/Corsi-VVF-web/api/courses', initParams)
                     .then(listResponse => listResponse.json())
                     .then(urlList => {
                         urlList.forEach(url => {
