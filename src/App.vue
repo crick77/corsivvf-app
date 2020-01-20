@@ -1,29 +1,36 @@
 <template>
   <div id="app">
-    <h1 class="ui center aligned header">Elenco Corsi</h1>
-    <Courses />
+    <router-view/>
   </div>
 </template>
 
 <script>
 import 'semantic-ui-css/semantic.css'
-import Courses from './components/Courses.vue'
 
 export default {
-  name: 'app',
-  components: {
-    Courses
-  }
+  name: 'app'
 }
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+  #app {
+    font-family: 'Avenir', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: #2c3e50;
+  }
+
+  #nav {
+    padding: 30px;
+  }
+
+  #nav a {
+    font-weight: bold;
+    color: #2c3e50;
+  }
+
+  #nav a.router-link-exact-active {
+    color: #42b983;
+  }
 </style>
