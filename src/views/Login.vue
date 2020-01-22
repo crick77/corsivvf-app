@@ -23,7 +23,7 @@
                     <button type="submit" class="ui fluid large teal submit button">Login</button>
                 </div>
 
-                <div class="ui error message">Errore nel login</div>
+                <div class="ui error message">Errore nel login [{{ errorCode}}]</div>
 
             </form>
         </div>
@@ -36,11 +36,13 @@ export default {
     data: () => ({
         username: null,
         password: null,
-        error: false
+        error: false,
+        errorCode : null
     }),
     methods: {
         onSubmit() {
             this.error = false;
+            this.errorCode = null;
 
             let loginBody = JSON.stringify({
                 'username': this.username,
@@ -56,8 +58,8 @@ export default {
                 mode: 'cors',
                 cache: 'default',
                 body: loginBody 
-            };
-            
+            };        
+
             fetch('http://localhost:8080/Corsi-VVF-web/api/auth/login', initParams)
             .then(response => {
                 switch(response.status) {
@@ -72,12 +74,18 @@ export default {
                     case 401: {
                         this.$store.commit('setUserToken', null);
                         this.error = true;
+                        this.errorCode = response.status;
+                        break;
                     }
+                    default: {
+                        throw response.status;
+                    }                        
                 }
             })
-            .catch(() => {
+            .catch(e => {
                 this.$store.commit('setUserToken', null);
                 this.error = true;
+                this.errorCode = e;
             });
         },
     },

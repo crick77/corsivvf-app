@@ -7,6 +7,7 @@
                 <th>Creazione</th>
                 <th>Aggiornamento</th>
                 <th>Abilitato</th>
+                <th width="8%" class="center aligned"><i class="icon cogs" title="Azioni"/></th>
             </thead>
             <tbody v-if="!loading">
                 <tr v-for="course in courses" :key="course.id">
@@ -15,73 +16,30 @@
                     <td>{{ course.dataCreazione | formatDate }}</td>
                     <td>{{ course.dataAggiornamento | formatDate }}</td>
                     <td class="center aligned"><imageFlag v-bind:value="course.abilitato" trueClass="check" falseClass="close" /></td>
+                    <td class="center aligned">
+                        <router-link :to="{ name: 'course', params: {courseid: course.id} }">
+                            <i class="icon pencil" title="Modifica" />
+                        </router-link>&nbsp;                        
+                        <i class="icon eraser" title="Modifica" @click="removeCourse(key)" />                        
+                    </td>
                 </tr>
                 <tr v-if="courses.length == 0">
-                    <td colspan="5" class="center aligned">Nessun corso in archivio.</td>
+                    <td colspan="6" class="center aligned">Nessun corso in archivio.</td>
                 </tr>
             </tbody>
             <tbody v-if="loading">
                 <tr>
-                    <td colspan="5">
-                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin:auto;background:#fff;display:block;" width="48px" height="48px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
-                            <g transform="rotate(0 50 50)">
-                            <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#fe718d">
-                                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.9166666666666666s" repeatCount="indefinite"></animate>
-                            </rect>
-                            </g><g transform="rotate(30 50 50)">
-                            <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#fe718d">
-                                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.8333333333333334s" repeatCount="indefinite"></animate>
-                            </rect>
-                            </g><g transform="rotate(60 50 50)">
-                            <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#fe718d">
-                                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.75s" repeatCount="indefinite"></animate>
-                            </rect>
-                            </g><g transform="rotate(90 50 50)">
-                            <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#fe718d">
-                                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.6666666666666666s" repeatCount="indefinite"></animate>
-                            </rect>
-                            </g><g transform="rotate(120 50 50)">
-                            <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#fe718d">
-                                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.5833333333333334s" repeatCount="indefinite"></animate>
-                            </rect>
-                            </g><g transform="rotate(150 50 50)">
-                            <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#fe718d">
-                                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.5s" repeatCount="indefinite"></animate>
-                            </rect>
-                            </g><g transform="rotate(180 50 50)">
-                            <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#fe718d">
-                                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.4166666666666667s" repeatCount="indefinite"></animate>
-                            </rect>
-                            </g><g transform="rotate(210 50 50)">
-                            <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#fe718d">
-                                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.3333333333333333s" repeatCount="indefinite"></animate>
-                            </rect>
-                            </g><g transform="rotate(240 50 50)">
-                            <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#fe718d">
-                                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.25s" repeatCount="indefinite"></animate>
-                            </rect>
-                            </g><g transform="rotate(270 50 50)">
-                            <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#fe718d">
-                                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.16666666666666666s" repeatCount="indefinite"></animate>
-                            </rect>
-                            </g><g transform="rotate(300 50 50)">
-                            <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#fe718d">
-                                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.08333333333333333s" repeatCount="indefinite"></animate>
-                            </rect>
-                            </g><g transform="rotate(330 50 50)">
-                            <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#fe718d">
-                                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="0s" repeatCount="indefinite"></animate>
-                            </rect>
-                            </g>
-                        </svg>
+                    <td colspan="6" class="center aligned">
+                        <img src='../assets/spinning.gif' />
                     </td>
                 </tr>
             </tbody>
             <tfoot v-if="(courses.length != 0) && (!loading)">
-                <th colspan="4">{{ courses.length }} corsi in archivio.</th>
-                <th class="center aligned"><i @click="refresh" class="icon refresh" /></th>
+                <th colspan="5">{{ courses.length }} corsi in archivio.</th>
+                <th class="center aligned"><i @click="refresh" class="icon refresh pointer" title="Aggiorna" /></th>
             </tfoot>
         </table>
+        <div class="ui error message" v-if="error">Errore del server.</div>
     </div>
 </template>
 
@@ -96,7 +54,8 @@ export default {
     data() {
         return {
             courses: [],
-            loading: true
+            loading: true,
+            error: false
         }
     },
     created() {
@@ -106,6 +65,7 @@ export default {
         refresh() {
             this.courses = [];
             this.loading = true;
+            this.error = false;
 
             let headers = new Headers();
             if(this.$store.state.userToken!=null) {
@@ -119,10 +79,17 @@ export default {
             };
 
             fetch('http://localhost:8080/Corsi-VVF-web/api/courses', initParams)
-                    .then(listResponse => listResponse.json())
+                    .then(listResponse => {
+                        console.log("Response ok? "+listResponse.ok);
+                        if(!listResponse.ok) {
+                            throw Error(listResponse.status)
+                        }
+                        return listResponse;
+                    })
+                    .then(jsonResponse => jsonResponse.json())
                     .then(urlList => {
                         urlList.forEach(url => {
-                        fetch(url)
+                        fetch(url, initParams)
                             .then(itemResponse => itemResponse.json())
                             .then(item => this.courses.push(item));      
                         })
@@ -132,7 +99,24 @@ export default {
                             console.log("FINISHED!!");
                             this.loading = false;
                         }, 2000);
+                    })
+                    .catch(error => {
+                        console.log("ERROR: "+error.message);
+                        switch(error.message) {
+                            case '401': {
+                                console.log("Going to home...");
+                                this.$router.push('/');
+                                break;
+                            }
+                            default: {
+                                this.error = true;
+                            }
+                        }
                     });
+        },
+
+        removeCourse(id) {
+            console.log("Deleting: "+id);
         }
     }
 }
@@ -151,7 +135,7 @@ export default {
         background-color: rgb(246, 246, 246);
     }
 
-    i:hover {
+    i.pointer:hover {
         cursor: pointer;
     }
 </style>
