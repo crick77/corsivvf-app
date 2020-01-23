@@ -20,7 +20,10 @@
                         <router-link :to="{ name: 'course', params: {courseid: course.id} }">
                             <i class="icon pencil" title="Modifica" />
                         </router-link>&nbsp;                        
-                        <i class="icon eraser" title="Modifica" @click="removeCourse(key)" />                        
+                        <i class="icon eraser pointer" title="Modifica" @click="removeCourse(course.id, course.titolo)" />                        
+                        <router-link :to="{ name: 'docs', params: {courseid: course.id} }">
+                            <i class="icon copy" title="Documenti" />
+                        </router-link>
                     </td>
                 </tr>
                 <tr v-if="courses.length == 0">
@@ -39,7 +42,8 @@
                 <th class="center aligned"><i @click="refresh" class="icon refresh pointer" title="Aggiorna" /></th>
             </tfoot>
         </table>
-        <div class="ui error message" v-if="error">Errore del server.</div>
+        <button type="button" class="ui primary button" v-on:click="addNew">Nuovo</button>
+        <div class="ui error message" v-if="error">{{ errorMessage }}</div>
     </div>
 </template>
 
@@ -55,7 +59,8 @@ export default {
         return {
             courses: [],
             loading: true,
-            error: false
+            error: false,
+            errorMessage : null
         }
     },
     created() {
@@ -101,6 +106,7 @@ export default {
                         }, 2000);
                     })
                     .catch(error => {
+                        this.loading = false;
                         console.log("ERROR: "+error.message);
                         switch(error.message) {
                             case '401': {
@@ -110,14 +116,60 @@ export default {
                             }
                             default: {
                                 this.error = true;
-                                this.loading = false;
+                                this.errorMessage = "Errore del server.";
                             }
                         }
                     });
         },
 
-        removeCourse(id) {
-            console.log("Deleting: "+id);
+        removeCourse(id, title) {
+            console.log("Deleting: "+id+", "+title);
+            if(id!=null) {
+                if(window.confirm("Eliminare il corso "+title)) {
+                    let headers = new Headers();
+                    if(this.$store.state.userToken!=null) {
+                        headers.append("Authorization", "Bearer "+this.$store.state.userToken);
+                    }
+
+                    let initParams = { 
+                        method: 'DELETE',
+                        headers: headers,
+                        mode: 'cors',
+                        cache: 'default'
+                    };
+
+                    fetch('http://localhost:8080/Corsi-VVF-web/api/courses/'+id, initParams)
+                    .then(response => {
+                        if(!response.ok) {
+                            throw Error(response.status);
+                        }
+                        return response;
+                    })
+                    .then(response => {
+                        if(response.status==204) {                           
+                            this.refresh();
+                        }                            
+                    })
+                    .catch(error => {
+                        this.error = true;
+                        this.loading = false;
+                        console.log("ERROR: "+error.message);
+                        switch(error.message) {
+                            case '409': {
+                                this.errorMessage = "Il corso risulta collegato ad altri oggetti. Impossibile eliminare.";                                
+                                break;
+                            }           
+                            default: {
+                                this.errorMessage = "Erorre del server.";
+                            }                 
+                        }
+                    });
+                }
+            }
+        },
+
+        addNew() {
+            this.$router.push({name: 'course'});
         }
     }
 }

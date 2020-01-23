@@ -3,6 +3,7 @@ import Router from "vue-router";
 import Login from "@/views/Login";
 import Home from '@/views/Home';
 import Course from '@/views/Course'
+import Docs from '@/views/Docs'
 import store from '@/store';
 
 Vue.use(Router);
@@ -45,9 +46,17 @@ export default new Router({
             }
         },
         {
-            path: "/course/:courseid",
+            path: "/course/:courseid?",
             name: "course",
             component: Course,
+            beforeEnter(to, from, next) {
+                checkGuard(to, from, next);
+            }
+        },
+        {
+            path: "/docs/:courseid",
+            name: "docs",
+            component: Docs,
             beforeEnter(to, from, next) {
                 checkGuard(to, from, next);
             }
