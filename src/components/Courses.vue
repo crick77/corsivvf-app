@@ -21,7 +21,7 @@
                             <i class="icon pencil" title="Modifica" />
                         </router-link>&nbsp;                        
                         <i class="icon eraser pointer" title="Modifica" @click="removeCourse(course.id, course.titolo)" />                        
-                        <router-link :to="{ name: 'docs', params: {courseid: course.id} }">
+                        <router-link :to="{ name: 'docs', params: { parentids: course.id} }">
                             <i class="icon copy" title="Documenti" />
                         </router-link>
                     </td>

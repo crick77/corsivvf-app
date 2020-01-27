@@ -20,6 +20,27 @@ Vue.filter('formatDate', function(value) {
   }
 })
 
+Vue.filter('formatBytes', function(value) {
+  if(value) {
+    if(typeof value == 'number' || value instanceof Number) {
+      let dim = '';
+      if(value>1048576) {
+        value = value/1048576.0;
+        dim = 'M';
+      }
+      else if(value>1024) {
+        value = value/1024.0;
+        dim = 'K';
+      }
+
+      return String(value.toFixed(2))+' '+dim;
+    }
+    else {
+      return value;
+    }
+  }
+})
+
 new Vue({
   store,
   router,

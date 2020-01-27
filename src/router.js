@@ -4,6 +4,7 @@ import Login from "@/views/Login";
 import Home from '@/views/Home';
 import Course from '@/views/Course'
 import Docs from '@/views/Docs'
+import Doc from '@/views/Doc'
 import store from '@/store';
 
 Vue.use(Router);
@@ -54,9 +55,17 @@ export default new Router({
             }
         },
         {
-            path: "/docs/:courseid",
+            path: "/docs/:parentids",
             name: "docs",
             component: Docs,
+            beforeEnter(to, from, next) {
+                checkGuard(to, from, next);
+            }
+        },
+        {
+            path: "/doc/:parentids",
+            name: "doc",
+            component: Doc,
             beforeEnter(to, from, next) {
                 checkGuard(to, from, next);
             }
