@@ -33,15 +33,13 @@ import moment from 'moment'
 export default {
     name: 'Course',
     data: () => ({
-        loading: true,
         pageName: 'Nuovo',
         error: false,
         errorMessage : '',
         courseid: null,
         course: {}
     }),
-    created() {
-        this.loading = true;        
+    created() {       
         this.courseid = this.$route.params.courseid;
 
         if(this.courseid!=null) {
@@ -73,10 +71,9 @@ export default {
             .then(() => {
                 window.setTimeout(() => {
                     console.log("FINISHED!!");
-                    this.loading = false;
                 }, 2000);
             })
-            .catch(error => {
+            .catch(error => {                
                 console.log("ERROR: "+error.message);
                 switch(error.message) {
                     case '401': {
@@ -84,8 +81,34 @@ export default {
                         this.$router.push('/');
                         break;
                     }
+                    case '422': {
+                        this.error = true;
+                        this.errorMessage = "Dati non validi, verificare.";
+                        break;
+                    }
+                    case '409': {
+                        this.error = true;
+                        this.errorMessage = "Le informazioni inserite esistono già. Verificare.";
+                        break;
+                    }
+                    case '404': {
+                        this.error = true;
+                        this.errorMessage = "L'informazione richiesta non è più disponibile. Riprovare.";
+                        break;
+                    }
+                    case '400': {
+                        this.error = true;
+                        this.errorMessage = "La richiesta conteneva errori. Verificare.";
+                        break;
+                    }
+                    case '500': {
+                        this.error = true;
+                        this.errorMessage = "Errore nel server. Contattare il supporto.";
+                        break;
+                    }
                     default: {
                         this.error = true;
+                        this.errorMessage = "Errore sconosciuto contattare il supporto ("+error.message+").";
                     }
                 }
             });
@@ -134,12 +157,9 @@ export default {
             })
             .then(response => {
                 console.log("COURSE UPDATE STATUS = "+response.status);
-                if(response.status==204 || response.status==201) {
-                    this.$router.push({name: 'home'});
-                }
+                this.$router.push({name: 'home'});                
             })
             .catch(error => {
-                this.error = true;
                 console.log("ERROR: "+error.message);
                 switch(error.message) {
                     case '401': {
@@ -147,13 +167,34 @@ export default {
                         this.$router.push('/');
                         break;
                     }
+                    case '422': {
+                        this.error = true;
+                        this.errorMessage = "Dati non validi, verificare.";
+                        break;
+                    }
                     case '409': {
-                        console.log("duplicato!");
-                        this.errorMessage = 'Il corso esiste già.';
+                        this.error = true;
+                        this.errorMessage = "Le informazioni inserite esistono già. Verificare.";
+                        break;
+                    }
+                    case '404': {
+                        this.error = true;
+                        this.errorMessage = "L'informazione richiesta non è più disponibile. Riprovare.";
+                        break;
+                    }
+                    case '400': {
+                        this.error = true;
+                        this.errorMessage = "La richiesta conteneva errori. Verificare.";
+                        break;
+                    }
+                    case '500': {
+                        this.error = true;
+                        this.errorMessage = "Errore nel server. Contattare il supporto.";
                         break;
                     }
                     default: {
                         this.error = true;
+                        this.errorMessage = "Errore sconosciuto contattare il supporto ("+error.message+").";
                     }
                 }
             });

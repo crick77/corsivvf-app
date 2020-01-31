@@ -23,7 +23,7 @@
                     <button type="submit" class="ui fluid large teal submit button">Login</button>
                 </div>
 
-                <div class="ui error message">Errore nel login [{{ errorCode}}]</div>
+                <div class="ui error message">{{ errorMessage }}</div>
 
             </form>
         </div>
@@ -37,12 +37,12 @@ export default {
         username: null,
         password: null,
         error: false,
-        errorCode : null
+        errorMessage : ''
     }),
     methods: {
         onSubmit() {
             this.error = false;
-            this.errorCode = null;
+            this.errorMessage = '';
 
             let loginBody = JSON.stringify({
                 'username': this.username,
@@ -62,30 +62,55 @@ export default {
 
             fetch('http://localhost:8080/Corsi-VVF-web/api/auth/login', initParams)
             .then(response => {
-                switch(response.status) {
-                    case 200: {
-                        response.text().then(textResp => {
-                            this.$store.commit('setUserToken', textResp);
-                            console.log(this.$store.state.userToken);
-                            this.$router.push('/home');
-                        });
+                if(!response.ok) {
+                    throw Error(response.status);
+                }
+                return response;
+            })
+            .then(response => response.text())
+            .then(textResp => {
+                this.$store.commit('setUserToken', textResp);
+                console.log(this.$store.state.userToken);
+                this.$router.push('/home');            
+            })
+            .catch(error => {
+                this.$store.commit('setUserToken', null);
+                switch(error.message) {
+                    case '401': {
+                        this.error = true;
+                        this.errorMessage = "User/password errate o applicazione non autorizzata.";
                         break;
                     }
-                    case 401: {
-                        this.$store.commit('setUserToken', null);
+                    case '422': {
                         this.error = true;
-                        this.errorCode = response.status;
+                        this.errorMessage = "Dati non validi, verificare.";
+                        break;
+                    }
+                    case '409': {
+                        this.error = true;
+                        this.errorMessage = "Le informazioni inserite esistono già. Verificare.";
+                        break;
+                    }
+                    case '404': {
+                        this.error = true;
+                        this.errorMessage = "L'informazione richiesta non è più disponibile. Riprovare.";
+                        break;
+                    }
+                    case '400': {
+                        this.error = true;
+                        this.errorMessage = "La richiesta conteneva errori. Verificare.";
+                        break;
+                    }
+                    case '500': {
+                        this.error = true;
+                        this.errorMessage = "Errore nel server. Contattare il supporto.";
                         break;
                     }
                     default: {
-                        throw response.status;
-                    }                        
-                }
-            })
-            .catch(e => {
-                this.$store.commit('setUserToken', null);
-                this.error = true;
-                this.errorCode = e;
+                        this.error = true;
+                        this.errorMessage = "Errore sconosciuto contattare il supporto ("+error.message+").";
+                    }
+                }                
             });
         },
     },

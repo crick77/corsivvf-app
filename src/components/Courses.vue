@@ -1,5 +1,26 @@
 <template>
-    <div class="ui container">
+    <div class="ui container">        
+        <div class="ui form">
+            <div class="inline fields">
+                <div class="field">
+                    <Logout/>
+                </div>
+                <div class="field">
+                    <label for="filter">Filtro: </label><input type="text" v-model="filter" /> 
+                </div>
+                <div class="field">
+                    <label>Mostra</label>
+                    <select class="ui search dropdown" v-model="show">
+                        <option value="all">Tutti</option>
+                        <option value="true">Abilitati</option>
+                        <option value="false">Disabilitati</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <button @click="refresh" class="ui violet button">Applica</button>
+                </div>
+            </div>
+        </div>
         <table class="ui celled table">
             <thead>
                 <th>Titolo</th>
@@ -20,7 +41,7 @@
                         <router-link :to="{ name: 'course', params: {courseid: course.id} }">
                             <i class="icon pencil" title="Modifica" />
                         </router-link>&nbsp;                        
-                        <i class="icon eraser pointer" title="Modifica" @click="removeCourse(course.id, course.titolo)" />                        
+                        <i class="icon eraser pointer" title="Elimina" @click="removeCourse(course.id, course.titolo)" />                        
                         <router-link :to="{ name: 'docs', params: { parentids: course.id} }">
                             <i class="icon copy" title="Documenti" />
                         </router-link>
@@ -43,24 +64,29 @@
             </tfoot>
         </table>
         <button type="button" class="ui primary button" v-on:click="addNew">Nuovo</button>
+        <button type="button" class="ui brown button" @click="showDevices">Dispositivi</button>
         <div class="ui error message" v-if="error">{{ errorMessage }}</div>
     </div>
 </template>
 
 <script>
 import ImageFlag from './ImageFlag'
+import Logout from './Logout'
 
 export default {
     name: 'Courses',
     components: {
-        ImageFlag
+        ImageFlag,
+        Logout
     },
     data() {
         return {
             courses: [],
             loading: true,
             error: false,
-            errorMessage : null
+            errorMessage : null,
+            filter: null,
+            show: 'all'
         }
     },
     created() {
@@ -77,13 +103,23 @@ export default {
                 headers.append("Authorization", "Bearer "+this.$store.state.userToken);
             }
 
+            let queryStr = "";
+            if(this.filter) {
+                queryStr = queryStr+"q="+this.filter;
+            }
+            if(this.show!='all') {
+                if(queryStr) queryStr=queryStr+"&";
+                queryStr = queryStr+"enabled="+this.show;
+            }
+            if(queryStr) queryStr="?"+queryStr;
+
             let initParams = { 
                 headers: headers,
                 mode: 'cors',
                 cache: 'default'
             };
 
-            fetch('http://localhost:8080/Corsi-VVF-web/api/courses', initParams)
+            fetch('http://localhost:8080/Corsi-VVF-web/api/courses'+queryStr, initParams)
                     .then(listResponse => {
                         console.log("Response ok? "+listResponse.ok);
                         if(!listResponse.ok) {
@@ -103,7 +139,7 @@ export default {
                         window.setTimeout(() => {
                             console.log("FINISHED!!");
                             this.loading = false;
-                        }, 2000);
+                        }, 1000);
                     })
                     .catch(error => {
                         this.loading = false;
@@ -114,14 +150,38 @@ export default {
                                 this.$router.push('/');
                                 break;
                             }
+                            case '422': {
+                                this.error = true;
+                                this.errorMessage = "Dati non validi, verificare.";
+                                break;
+                            }
+                            case '409': {
+                                this.error = true;
+                                this.errorMessage = "Le informazioni inserite esistono già. Verificare.";
+                                break;
+                            }
+                            case '404': {
+                                this.error = true;
+                                this.errorMessage = "L'informazione richiesta non è più disponibile. Riprovare.";
+                                break;
+                            }
+                            case '400': {
+                                this.error = true;
+                                this.errorMessage = "La richiesta conteneva errori. Verificare.";
+                                break;
+                            }
+                            case '500': {
+                                this.error = true;
+                                this.errorMessage = "Errore nel server. Contattare il supporto.";
+                                break;
+                            }
                             default: {
                                 this.error = true;
-                                this.errorMessage = "Errore del server.";
+                                this.errorMessage = "Errore sconosciuto contattare il supporto ("+error.message+").";
                             }
                         }
                     });
         },
-
         removeCourse(id, title) {
             console.log("Deleting: "+id+", "+title);
             if(id!=null) {
@@ -145,31 +205,56 @@ export default {
                         }
                         return response;
                     })
-                    .then(response => {
-                        if(response.status==204) {                           
-                            this.refresh();
-                        }                            
+                    .then(() => {
+                        this.refresh();                        
                     })
-                    .catch(error => {
-                        this.error = true;
-                        this.loading = false;
+                    .catch(error => {                    
                         console.log("ERROR: "+error.message);
                         switch(error.message) {
-                            case '409': {
-                                this.errorMessage = "Il corso risulta collegato ad altri oggetti. Impossibile eliminare.";                                
+                            case '401': {
+                                console.log("Going to home...");
+                                this.$router.push('/');
                                 break;
-                            }           
+                            }
+                            case '422': {
+                                this.error = true;
+                                this.errorMessage = "Dati non validi, verificare.";
+                                break;
+                            }
+                            case '409': {
+                                this.error = true;
+                                this.errorMessage = "Le informazioni inserite esistono già. Verificare.";
+                                break;
+                            }
+                            case '404': {
+                                this.error = true;
+                                this.errorMessage = "L'informazione richiesta non è più disponibile. Riprovare.";
+                                break;
+                            }
+                            case '400': {
+                                this.error = true;
+                                this.errorMessage = "La richiesta conteneva errori. Verificare.";
+                                break;
+                            }
+                            case '500': {
+                                this.error = true;
+                                this.errorMessage = "Errore nel server. Contattare il supporto.";
+                                break;
+                            }
                             default: {
-                                this.errorMessage = "Erorre del server.";
-                            }                 
+                                this.error = true;
+                                this.errorMessage = "Errore sconosciuto contattare il supporto ("+error.message+").";
+                            }
                         }
                     });
                 }
             }
         },
-
         addNew() {
             this.$router.push({name: 'course'});
+        },
+        showDevices() {
+            this.$router.push({name: 'devices'});
         }
     }
 }

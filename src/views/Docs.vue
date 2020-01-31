@@ -93,9 +93,10 @@ export default {
                 window.setTimeout(() => {
                     console.log("FINISHED!!");
                     this.loading = false;
-                }, 2000);
+                }, 1000);
             })
             .catch(error => {
+                this.loading = false;
                 console.log("ERROR: "+error.message);
                 switch(error.message) {
                     case '401': {
@@ -103,10 +104,38 @@ export default {
                         this.$router.push('/');
                         break;
                     }
+                    case '422': {
+                        this.error = true;
+                        this.errorMessage = "Dati non validi, verificare.";
+                        break;
+                    }
+                    case '409': {
+                        this.error = true;
+                        this.errorMessage = "Le informazioni inserite esistono già. Verificare.";
+                        break;
+                    }
+                    case '404': {
+                        this.error = true;
+                        this.errorMessage = "L'informazione richiesta non è più disponibile. Riprovare.";
+                        break;
+                    }
+                    case '400': {
+                        this.error = true;
+                        this.errorMessage = "La richiesta conteneva errori. Verificare.";
+                        break;
+                    }
+                    case '500': {
+                        this.error = true;
+                        this.errorMessage = "Errore nel server. Contattare il supporto.";
+                        break;
+                    }
                     default: {
                         this.error = true;
+                        this.errorMessage = "Errore sconosciuto contattare il supporto ("+error.message+").";
                     }
                 }
+
+                return;
             });
 
         this.refresh();
@@ -126,6 +155,7 @@ export default {
         },
         refresh() {
             this.loading = true;
+            this.error = false;
             this.documents = [];
 
             let headers = new Headers();
@@ -176,9 +206,34 @@ export default {
                         this.$router.push('/');
                         break;
                     }
+                    case '422': {
+                        this.error = true;
+                        this.errorMessage = "Dati non validi, verificare.";
+                        break;
+                    }
+                    case '409': {
+                        this.error = true;
+                        this.errorMessage = "Le informazioni inserite esistono già. Verificare.";
+                        break;
+                    }
+                    case '404': {
+                        this.error = true;
+                        this.errorMessage = "L'informazione richiesta non è più disponibile. Riprovare.";
+                        break;
+                    }
+                    case '400': {
+                        this.error = true;
+                        this.errorMessage = "La richiesta conteneva errori. Verificare.";
+                        break;
+                    }
+                    case '500': {
+                        this.error = true;
+                        this.errorMessage = "Errore nel server. Contattare il supporto.";
+                        break;
+                    }
                     default: {
                         this.error = true;
-                        this.errorMessage = "Errore del server.";
+                        this.errorMessage = "Errore sconosciuto contattare il supporto ("+error.message+").";
                     }
                 }
             });
@@ -241,14 +296,34 @@ export default {
                         this.$router.push('/');
                         break;
                     }
+                    case '422': {
+                        this.error = true;
+                        this.errorMessage = "Dati non validi, verificare.";
+                        break;
+                    }
+                    case '409': {
+                        this.error = true;
+                        this.errorMessage = "Le informazioni inserite esistono già. Verificare.";
+                        break;
+                    }
+                    case '404': {
+                        this.error = true;
+                        this.errorMessage = "L'informazione richiesta non è più disponibile. Riprovare.";
+                        break;
+                    }
+                    case '400': {
+                        this.error = true;
+                        this.errorMessage = "La richiesta conteneva errori. Verificare.";
+                        break;
+                    }
                     case '500': {
                         this.error = true;
-                        this.errorMessage = "Errore del server.";
+                        this.errorMessage = "Errore nel server. Contattare il supporto.";
                         break;
                     }
                     default: {
                         this.error = true;
-                        this.errorMessage = "Errore nel download: "+error.message;
+                        this.errorMessage = "Errore sconosciuto contattare il supporto ("+error.message+").";
                     }
                 }
             });
@@ -290,22 +365,42 @@ export default {
                 }                            
             })
             .catch(error => {
-                this.error = true;
-                this.loading = false;
                 console.log("ERROR: "+error.message);
                 switch(error.message) {
-                     case '401': {
+                    case '401': {
                         console.log("Going to home...");
                         this.$router.push('/');
                         break;
                     }
-                    case '409': {
-                        this.errorMessage = "Il documento risulta collegato ad altri oggetti. Impossibile eliminare.";                                
+                    case '422': {
+                        this.error = true;
+                        this.errorMessage = "Dati non validi, verificare.";
                         break;
-                    }           
+                    }
+                    case '409': {
+                        this.error = true;
+                        this.errorMessage = "Le informazioni inserite esistono già. Verificare.";
+                        break;
+                    }
+                    case '404': {
+                        this.error = true;
+                        this.errorMessage = "L'informazione richiesta non è più disponibile. Riprovare.";
+                        break;
+                    }
+                    case '400': {
+                        this.error = true;
+                        this.errorMessage = "La richiesta conteneva errori. Verificare.";
+                        break;
+                    }
+                    case '500': {
+                        this.error = true;
+                        this.errorMessage = "Errore nel server. Contattare il supporto.";
+                        break;
+                    }
                     default: {
-                        this.errorMessage = "Erorre del server.";
-                    }                 
+                        this.error = true;
+                        this.errorMessage = "Errore sconosciuto contattare il supporto ("+error.message+").";
+                    }
                 }
             });
         },

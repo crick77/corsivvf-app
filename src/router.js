@@ -5,6 +5,7 @@ import Home from '@/views/Home';
 import Course from '@/views/Course'
 import Docs from '@/views/Docs'
 import Doc from '@/views/Doc'
+import Devices from '@/views/Devices'
 import store from '@/store';
 
 Vue.use(Router);
@@ -69,6 +70,11 @@ export default new Router({
             beforeEnter(to, from, next) {
                 checkGuard(to, from, next);
             }
+        },
+        {
+            path: "/devices",
+            name: "devices",
+            component: Devices            
         }
     ],
     
