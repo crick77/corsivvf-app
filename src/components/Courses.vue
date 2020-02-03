@@ -38,13 +38,9 @@
                     <td>{{ course.dataAggiornamento | formatDate }}</td>
                     <td class="center aligned"><imageFlag v-bind:value="course.abilitato" trueClass="check" falseClass="close" /></td>
                     <td class="center aligned">
-                        <router-link :to="{ name: 'course', params: {courseid: course.id} }">
-                            <i class="icon pencil" title="Modifica" />
-                        </router-link>&nbsp;                        
+                        <router-link tag="i" class="icon pencil pointer" title="Modifica" :to="{ name: 'course', params: {courseid: course.id} }" />
                         <i class="icon eraser pointer" title="Elimina" @click="removeCourse(course.id, course.titolo)" />                        
-                        <router-link :to="{ name: 'docs', params: { parentids: course.id} }">
-                            <i class="icon copy" title="Documenti" />
-                        </router-link>
+                        <router-link tag="i" class="icon copy pointer" title="Documenti" :to="{ name: 'docs', params: { parentids: course.id} }" />
                     </td>
                 </tr>
                 <tr v-if="courses.length == 0">
@@ -265,9 +261,9 @@ export default {
         margin-top: 3em;
     }
 
-    .ui.table th:not(:first-child):hover {
+    /*.ui.table th:not(:first-child):hover {
         cursor: pointer;
-    }
+    }*/
 
     .ui.table tr:hover {
         background-color: rgb(246, 246, 246);
