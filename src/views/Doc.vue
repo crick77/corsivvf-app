@@ -2,7 +2,7 @@
     <div class="ui container">
         <form class="ui form" @submit.prevent="onSubmit">
             <h4 class="ui dividing header">Carica documento</h4>
-            <div class="field required">
+            <div class="field required" :class="documentError">
                 <label>File</label>
                 <input type="file" placeholder="Documento" id="document" @change="selectedFile($event)"/>
             </div>            
@@ -21,6 +21,7 @@ export default {
         categoryId: null,
         error: false,
         errorMessage: null,
+        documentError: null,
         docFile: null
     }),
     created() {
@@ -38,6 +39,12 @@ export default {
         },
         save() {
             this.error = false;
+            this.documentError = null;
+
+            if(!this.docFile) {
+                this.documentError = 'error';
+                return;
+            }
 
             let formData = new FormData();
             formData.append('document', this.docFile);

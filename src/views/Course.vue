@@ -2,17 +2,17 @@
     <div class="ui container">
         <form class="ui form" @submit.prevent="onSubmit">
             <h4 class="ui dividing header">{{ pageName }} corso</h4>
-            <div class="field required">
+            <div class="field required" :class="titoloError">
                 <label>Titolo</label>
                 <input type="text" placeholder="Titolo" v-model="course.titolo">
             </div>
-            <div class="field required">
+            <div class="field required" :class="descrizioneError">
                 <label>Descrizione</label>
                 <input type="text" placeholder="Descrizione" v-model="course.descrizione">
             </div>            
-            <div class="field required">
+            <div class="field required" :class="dataCreazioneError">
                 <label>Data creazione</label>
-                <input type="text" placeholder="Descrizione" readonly="true" :value="course.dataCreazione | formatDate">
+                <input type="text" placeholder="Dara creazione GG/MM/AAAA" readonly="true" :value="course.dataCreazione | formatDate">
             </div>            
             <div class="field">
                 <div class="ui toggle checkbox">
@@ -37,6 +37,9 @@ export default {
         error: false,
         errorMessage : '',
         courseid: null,
+        dataCreazioneError : null,
+        titoloError : null,
+        descrizioneError : null,
         course: {}
     }),
     created() {       
@@ -125,7 +128,22 @@ export default {
         save() {
             this.error = false;
             this.errorMessage = '';
+            this.titoloError = this.descrizioneError = this.dataCreazioneError = null;
             console.log("SAVING COURSE...");
+
+            if(!this.course.titolo) {
+                this.titoloError = 'error';
+            }
+
+            if(!this.course.descrizione) {
+                this.descrizioneError = 'error';
+            }
+
+            if(!this.course.dataCreazione) {
+                this.dataCreazioneError = 'error';
+            }
+
+            if(this.dataCreazioneError || this.titoloError || this.descrizioneError) return;
 
             this.course.titolo = this.course.titolo.toUpperCase();
 
