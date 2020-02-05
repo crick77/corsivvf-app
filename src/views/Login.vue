@@ -72,7 +72,7 @@ export default {
                 body: loginBody 
             };        
 
-            fetch('http://localhost:8085/Corsi-VVF-web/api/auth/login', initParams)
+            fetch('http://localhost:8080/Corsi-VVF-web/api/auth/login', initParams)
             .then(response => {
                 if(!response.ok) {
                     throw Error(response.status);
