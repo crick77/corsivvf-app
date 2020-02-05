@@ -78,11 +78,6 @@ export default {
             })
             .catch(error => {                
                 console.log("ERROR: "+error.message);
-                if(!error.response) {
-                    this.error = true;
-                    this.errorMessage = 'Comunicazione con il server fallita.';
-                    return;
-                }
                 switch(error.message) {
                     case '401': {
                         console.log("Going to home...");
@@ -116,7 +111,12 @@ export default {
                     }
                     default: {
                         this.error = true;
-                        this.errorMessage = "Errore sconosciuto contattare il supporto ("+error.message+").";
+                        if(!error.response) {
+                            this.errorMessage = 'Comunicazione con il server fallita.';
+                        }
+                        else {
+                            this.errorMessage = "Errore sconosciuto contattare il supporto ("+error.message+").";
+                        }
                     }
                 }
             });
@@ -184,11 +184,6 @@ export default {
             })
             .catch(error => {
                 console.log("ERROR: "+error.message);
-                if(!error.response) {
-                    this.error = true;
-                    this.errorMessage = 'Comunicazione con il server fallita.';
-                    return;
-                }
                 switch(error.message) {
                     case '401': {
                         console.log("Going to home...");
@@ -222,7 +217,12 @@ export default {
                     }
                     default: {
                         this.error = true;
-                        this.errorMessage = "Errore sconosciuto contattare il supporto ("+error.message+").";
+                        if(!error.response) {
+                            this.errorMessage = 'Comunicazione con il server fallita.';
+                        }
+                        else {
+                            this.errorMessage = "Errore sconosciuto contattare il supporto ("+error.message+").";
+                        }
                     }
                 }
             });
