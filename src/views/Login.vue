@@ -8,17 +8,17 @@
             </h2>
             <form class="ui large form" @submit.prevent="onSubmit" :class="{ error }">
                 <div class="ui stacked segment">
-                    <div class="field">
-                    <div class="ui left icon input">
-                        <i class="user icon"></i>
-                        <input type="text" v-model="username" name="username" placeholder="Username">
+                    <div class="field" :class="usernameError">
+                        <div class="ui left icon input">
+                            <i class="user icon"></i>
+                            <input type="text" v-model="username" name="username" placeholder="Username">
+                        </div>
                     </div>
-                    </div>
-                    <div class="field">
-                    <div class="ui left icon input">
-                        <i class="lock icon"></i>
-                        <input type="password" v-model="password" name="password" placeholder="Password">
-                    </div>
+                    <div class="field" :class="passwordError">
+                        <div class="ui left icon input">
+                            <i class="lock icon"></i>
+                            <input type="password" v-model="password" name="password" placeholder="Password">
+                        </div>
                     </div>
                     <button type="submit" class="ui fluid large teal submit button">Login</button>
                 </div>
@@ -36,13 +36,25 @@ export default {
     data: () => ({
         username: null,
         password: null,
+        usernameError: null,
+        passwordError: null,
         error: false,
         errorMessage : ''
     }),
     methods: {
         onSubmit() {
             this.error = false;
+            this.usernameError = this.passwordError = null;
             this.errorMessage = '';
+
+            if(!this.username) {
+                this.usernameError = 'error';
+            }
+            if(!this.password) {
+                this.passwordError = 'error';
+            }
+
+            if(this.usernameError || this.passwordError) return;
 
             let loginBody = JSON.stringify({
                 'username': this.username,
@@ -60,7 +72,7 @@ export default {
                 body: loginBody 
             };        
 
-            fetch('http://localhost:8080/Corsi-VVF-web/api/auth/login', initParams)
+            fetch('http://localhost:8085/Corsi-VVF-web/api/auth/login', initParams)
             .then(response => {
                 if(!response.ok) {
                     throw Error(response.status);
@@ -75,6 +87,11 @@ export default {
             })
             .catch(error => {
                 this.$store.commit('setUserToken', null);
+                if(!error.response) {
+                    this.error = true;
+                    this.errorMessage = 'Comunicazione con il server fallita.';
+                    return;
+                }
                 switch(error.message) {
                     case '401': {
                         this.error = true;

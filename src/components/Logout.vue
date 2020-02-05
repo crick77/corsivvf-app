@@ -53,6 +53,11 @@ export default {
             })            
             .catch(error => {
                 console.log("ERROR: "+error.message);
+                if(!error.response) {
+                    this.error = true;
+                    this.errorMessage = 'Comunicazione con il server fallita.';
+                    return;
+                }
                 switch(error.message) {
                     case '401': {
                         console.log("Already logged out...going home...");
